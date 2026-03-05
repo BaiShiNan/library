@@ -21,7 +21,7 @@ public class ApplicationConfig {
             queryWrapper.eq(com.library.backend.entity.User::getEmail, username);
             com.library.backend.entity.User user = userMapper.selectOne(queryWrapper);
             if (user == null) {
-                throw new UsernameNotFoundException("User not found");
+                throw new UsernameNotFoundException("用户不存在");
             }
             return user;
         };

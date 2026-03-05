@@ -66,14 +66,14 @@ public class BookController {
         
         if (favorite != null) {
             favoriteMapper.deleteById(favorite.getId());
-            return ResponseEntity.ok("Removed from favorites");
+            return ResponseEntity.ok("已取消收藏");
         } else {
             Favorite newFavorite = new Favorite();
             newFavorite.setUserId(user.getId());
             newFavorite.setBookId(id);
             newFavorite.setCreatedAt(LocalDateTime.now());
             favoriteMapper.insert(newFavorite);
-            return ResponseEntity.ok("Added to favorites");
+            return ResponseEntity.ok("已添加到收藏");
         }
     }
 }

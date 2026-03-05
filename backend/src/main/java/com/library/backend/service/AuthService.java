@@ -28,7 +28,7 @@ public class AuthService {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getEmail, request.getEmail());
         if (userMapper.selectCount(queryWrapper) > 0) {
-            throw new RuntimeException("Email already exists");
+            throw new RuntimeException("邮箱已被注册");
         }
 
         var user = new User();
@@ -58,7 +58,7 @@ public class AuthService {
         queryWrapper.eq(User::getEmail, request.getEmail());
         var user = userMapper.selectOne(queryWrapper);
         if (user == null) {
-             throw new RuntimeException("User not found");
+             throw new RuntimeException("用户不存在");
         }
         
         var jwtToken = jwtService.generateToken(user);
