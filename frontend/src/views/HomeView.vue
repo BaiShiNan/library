@@ -39,60 +39,60 @@ onMounted(async () => {
     ];
     recommendedBooks.value = [
       {
-        id: '1',
+        id: 1,
         title: '了不起的盖茨比',
         author: 'F. Scott Fitzgerald',
-        category: '文学',
+        categoryId: 1,
         coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=The+Great+Gatsby+book+cover+vintage+classic&image_size=portrait_4_3',
         fileUrl: '',
         rating: 4.5,
         pageCount: 180,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         isbn: '123456',
         description: '',
-        publishDate: new Date()
+        publishDate: new Date().toISOString()
       },
       {
-        id: '2',
+        id: 2,
         title: '代码整洁之道',
         author: 'Robert C. Martin',
-        category: '科技',
+        categoryId: 2,
         coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Clean+Code+book+cover+programming+technology&image_size=portrait_4_3',
         fileUrl: '',
         rating: 4.8,
         pageCount: 464,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         isbn: '123457',
         description: '',
-        publishDate: new Date()
+        publishDate: new Date().toISOString()
       },
       {
-        id: '3',
+        id: 3,
         title: '人类简史',
         author: 'Yuval Noah Harari',
-        category: '历史',
+        categoryId: 3,
         coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Sapiens+book+cover+history+anthropology&image_size=portrait_4_3',
         fileUrl: '',
         rating: 4.7,
         pageCount: 443,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         isbn: '123458',
         description: '',
-        publishDate: new Date()
+        publishDate: new Date().toISOString()
       },
       {
-        id: '4',
+        id: 4,
         title: '思考，快与慢',
         author: 'Daniel Kahneman',
-        category: '经济',
+        categoryId: 4,
         coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Thinking+Fast+and+Slow+book+cover+psychology+economy&image_size=portrait_4_3',
         fileUrl: '',
         rating: 4.6,
         pageCount: 499,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         isbn: '123459',
         description: '',
-        publishDate: new Date()
+        publishDate: new Date().toISOString()
       }
     ];
   } finally {

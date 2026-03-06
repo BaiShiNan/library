@@ -34,6 +34,7 @@ const toggleMenu = () => {
         <div class="hidden md:flex items-center space-x-1">
           <RouterLink to="/" class="nav-item" active-class="active">首页</RouterLink>
           <RouterLink to="/books" class="nav-item" active-class="active">图书库</RouterLink>
+          <RouterLink v-if="authStore.user?.role === 'ADMIN'" to="/admin" class="nav-item" active-class="active">管理后台</RouterLink>
           
           <div class="h-6 w-px bg-gray-200 mx-4"></div>
 
@@ -93,6 +94,10 @@ const toggleMenu = () => {
           <RouterLink to="/books" class="mobile-nav-item" active-class="bg-primary/5 text-primary" @click="isMenuOpen = false">
             <BookOpen class="h-5 w-5 mr-3" />
             图书库
+          </RouterLink>
+          <RouterLink v-if="authStore.user?.role === 'ADMIN'" to="/admin" class="mobile-nav-item" active-class="bg-primary/5 text-primary" @click="isMenuOpen = false">
+            <Menu class="h-5 w-5 mr-3" />
+            管理后台
           </RouterLink>
           
           <div class="border-t border-gray-100 my-2 pt-2">

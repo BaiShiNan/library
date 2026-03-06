@@ -1,5 +1,6 @@
 -- Create Database
-CREATE DATABASE IF NOT EXISTS digital_library;
+CREATE DATABASE IF NOT EXISTS digital_library
+    DEFAULT CHARACTER SET = 'utf8mb4';
 USE digital_library;
 
 -- Create Users Table

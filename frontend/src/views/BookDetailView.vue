@@ -22,17 +22,17 @@ const fetchBook = async () => {
     console.error('Failed to fetch book', error);
     // Mock data
     book.value = {
-        id: String(route.params.id),
+        id: Number(route.params.id),
         title: '了不起的盖茨比',
         author: 'F. Scott Fitzgerald',
-        category: '文学',
+        categoryId: 1, // 文学分类对应ID
         coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=The+Great+Gatsby+book+cover+vintage+classic&image_size=portrait_4_3',
         fileUrl: '',
         rating: 4.5,
         pageCount: 180,
         description: '《了不起的盖茨比》是美国作家F·斯科特·菲茨杰拉德于1925年出版的小说。故事背景设定在纽约长岛和爵士时代的纽约市，讲述了叙述者尼克·卡拉威与神秘百万富翁杰伊·盖茨比的交往，以及盖茨比对自己旧爱黛西·布卡南的痴迷追求。这部小说被广泛认为是美国文学的经典之作。',
-        publishDate: new Date('1925-04-10'),
-        createdAt: new Date(),
+        publishDate: '1925-04-10',
+        createdAt: new Date().toISOString(),
         isbn: '978-7-5442-7086-6'
     };
   } finally {
@@ -116,7 +116,7 @@ onMounted(() => {
             <div class="flex items-start justify-between">
               <div>
                 <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-primary text-xs font-semibold tracking-wide uppercase mb-3">
-                  {{ book.category || '未分类' }}
+                  {{ book.categoryId || '未分类' }}
                 </span>
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 leading-tight">{{ book.title }}</h1>
                 <p class="text-xl text-gray-600 font-medium">{{ book.author }}</p>

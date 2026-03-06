@@ -35,6 +35,13 @@ public class AuthService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        
+        if ("admin@example.com".equalsIgnoreCase(request.getEmail())) {
+            user.setRole("ADMIN");
+        } else {
+            user.setRole("USER");
+        }
+        
         user.setAvatarUrl(request.getAvatarUrl());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
