@@ -120,7 +120,7 @@ onMounted(() => {
               :class="!selectedCategory ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-primary'"
             >
               <span class="font-medium">全部图书</span>
-              <span v-if="!selectedCategory" class="bg-white/20 px-2 py-0.5 rounded text-xs">All</span>
+              <span v-if="!selectedCategory" class="bg-white/20 px-2 py-0.5 rounded text-xs">全部</span>
             </button>
           </li>
           <li v-for="category in categories" :key="category.id">

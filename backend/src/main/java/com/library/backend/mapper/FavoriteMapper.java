@@ -11,4 +11,6 @@ public interface FavoriteMapper {
     java.util.List<Favorite> selectByUserId(Integer userId);
     int insert(Favorite favorite);
     int deleteById(Integer id);
+    int deleteByBookId(Integer bookId);
+    int deleteByUserId(Integer userId);
 }

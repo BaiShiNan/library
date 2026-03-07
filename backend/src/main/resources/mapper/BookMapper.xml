@@ -37,7 +37,7 @@
                 AND (title LIKE CONCAT('%', #{search}, '%') OR author LIKE CONCAT('%', #{search}, '%'))
             </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY id ASC
     </select>
 
     <select id="selectBatchIds" resultMap="BaseResultMap">

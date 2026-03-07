@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
     User selectById(Integer id);
     User selectByEmail(String email);
-    java.util.List<User> selectList();
+    java.util.List<User> selectList(@Param("search") String search);
     int insert(User user);
     int update(User user);
     int deleteById(Integer id);

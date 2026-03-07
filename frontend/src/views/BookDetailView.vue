@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import api from '../api';
 import type { Book } from '../types';
 import { useAuthStore } from '../stores/auth';
-import { Star, BookOpen, Heart, Calendar, FileText, Share2, Info } from 'lucide-vue-next';
+import { Star, BookOpen, Heart, Calendar, FileText, Share2, Info, ArrowLeft } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
@@ -52,13 +52,22 @@ const toggleFavorite = async () => {
     isFavorite.value = !isFavorite.value;
   } catch (error) {
     console.error('Failed to toggle favorite', error);
-    // Mock toggle for demo
-    isFavorite.value = !isFavorite.value;
+  }
+};
+
+const checkFavoriteStatus = async () => {
+  if (!authStore.isAuthenticated) return;
+  try {
+    const res = await api.get<{ isFavorite: boolean }>(`/books/${route.params.id}/favorite`);
+    isFavorite.value = res.data.isFavorite;
+  } catch (error) {
+    console.error('Failed to check favorite status', error);
   }
 };
 
 onMounted(() => {
   fetchBook();
+  checkFavoriteStatus();
 });
 </script>
 
@@ -73,6 +82,16 @@ onMounted(() => {
   </div>
 
   <div v-else-if="book" class="max-w-5xl mx-auto">
+    <div class="mb-6">
+      <button 
+        @click="router.back()" 
+        class="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors px-4 py-2 rounded-full hover:bg-gray-100 font-medium"
+      >
+        <ArrowLeft class="h-5 w-5" />
+        返回
+      </button>
+    </div>
+    
     <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
       <div class="md:flex">
         <!-- Book Cover Section -->

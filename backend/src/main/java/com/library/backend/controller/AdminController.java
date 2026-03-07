@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.library.backend.entity.Book;
 import com.library.backend.entity.User;
 import com.library.backend.mapper.BookMapper;
+import com.library.backend.mapper.FavoriteMapper;
+import com.library.backend.mapper.ReadingHistoryMapper;
 import com.library.backend.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +36,8 @@ public class AdminController {
 
     private final BookMapper bookMapper;
     private final UserMapper userMapper;
+    private final FavoriteMapper favoriteMapper;
+    private final ReadingHistoryMapper readingHistoryMapper;
 
     @Value("${file.upload-dir:uploads}")
     private String uploadDir;
@@ -69,12 +74,12 @@ public class AdminController {
             book.setFileUrl("");
 
             if (cover != null && !cover.isEmpty()) {
-                String fileName = saveFile(cover);
+                String fileName = saveFile(cover, "covers");
                 book.setCoverUrl("/document/" + fileName);
             }
 
             if (file != null && !file.isEmpty()) {
-                String fileName = saveFile(file);
+                String fileName = saveFile(file, "books");
                 book.setFileUrl("/document/" + fileName);
             } else {
                 return ResponseEntity.badRequest().body("图书文件不能为空");
@@ -96,26 +101,85 @@ public class AdminController {
     @DeleteMapping("/books/{id}")
     @CacheEvict(value = "book", key = "#id")
     public ResponseEntity<?> deleteBook(@PathVariable Integer id) {
-        bookMapper.deleteById(id);
+        Book book = bookMapper.selectById(id);
+        if (book != null) {
+            deleteBookFiles(book);
+            // Delete related records manually to avoid FK constraint issues
+            favoriteMapper.deleteByBookId(id);
+            readingHistoryMapper.deleteByBookId(id);
+            bookMapper.deleteById(id);
+        }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/books/batch-delete")
+    @CacheEvict(value = "book", allEntries = true)
+    public ResponseEntity<?> deleteBooks(@RequestBody Map<String, List<Integer>> payload) {
+        List<Integer> ids = payload.get("ids");
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID列表不能为空");
+        }
+        try {
+            for (Integer id : ids) {
+                Book book = bookMapper.selectById(id);
+                if (book != null) {
+                    deleteBookFiles(book);
+                    // Delete related records manually to avoid FK constraint issues
+                    favoriteMapper.deleteByBookId(id);
+                    readingHistoryMapper.deleteByBookId(id);
+                    bookMapper.deleteById(id);
+                }
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("批量删除失败: " + e.getMessage());
+        }
     }
 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "1") int page,
-                                         @RequestParam(defaultValue = "10") int size) {
+                                         @RequestParam(defaultValue = "10") int size,
+                                         @RequestParam(required = false) String search) {
         PageHelper.startPage(page, size);
-        List<User> users = userMapper.selectList();
+        List<User> users = userMapper.selectList(search);
         return ResponseEntity.ok(new PageInfo<>(users));
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
-        userMapper.deleteById(id);
-        return ResponseEntity.ok().build();
+        try {
+            favoriteMapper.deleteByUserId(id);
+            readingHistoryMapper.deleteByUserId(id);
+            userMapper.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("删除失败: " + e.getMessage());
+        }
     }
 
-    private String saveFile(MultipartFile file) throws IOException {
-        Path uploadPath = Paths.get(uploadDir);
+    @PostMapping("/users/batch-delete")
+    public ResponseEntity<?> deleteUsers(@RequestBody Map<String, List<Integer>> payload) {
+        List<Integer> ids = payload.get("ids");
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().body("ID列表不能为空");
+        }
+        try {
+            for (Integer id : ids) {
+                favoriteMapper.deleteByUserId(id);
+                readingHistoryMapper.deleteByUserId(id);
+                userMapper.deleteById(id);
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("批量删除失败: " + e.getMessage());
+        }
+    }
+
+    private String saveFile(MultipartFile file, String subDir) throws IOException {
+        Path uploadPath = Paths.get(uploadDir, subDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -130,6 +194,28 @@ public class AdminController {
         String fileName = UUID.randomUUID().toString() + extension;
         Path filePath = uploadPath.resolve(fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        return fileName;
+        return subDir + "/" + fileName;
+    }
+
+    private void deleteBookFiles(Book book) {
+        try {
+            if (book.getCoverUrl() != null && book.getCoverUrl().startsWith("/document/")) {
+                String relativePath = book.getCoverUrl().replace("/document/", "");
+                // Prevent directory traversal
+                if (!relativePath.contains("..")) {
+                     Path path = Paths.get(uploadDir, relativePath);
+                     Files.deleteIfExists(path);
+                }
+            }
+            if (book.getFileUrl() != null && book.getFileUrl().startsWith("/document/")) {
+                String relativePath = book.getFileUrl().replace("/document/", "");
+                if (!relativePath.contains("..")) {
+                    Path path = Paths.get(uploadDir, relativePath);
+                    Files.deleteIfExists(path);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

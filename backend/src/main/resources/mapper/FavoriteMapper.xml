@@ -39,4 +39,12 @@
     <delete id="deleteById">
         DELETE FROM favorites WHERE id = #{id}
     </delete>
+
+    <delete id="deleteByBookId">
+        DELETE FROM favorites WHERE book_id = #{bookId}
+    </delete>
+
+    <delete id="deleteByUserId">
+        DELETE FROM favorites WHERE user_id = #{userId}
+    </delete>
 </mapper>

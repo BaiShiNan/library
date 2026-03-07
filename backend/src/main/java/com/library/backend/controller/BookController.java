@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.library.backend.mapper.ReadingHistoryMapper;
+import com.library.backend.entity.ReadingHistory;
+import java.math.BigDecimal;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class BookController {
 
     private final BookMapper bookMapper;
     private final FavoriteMapper favoriteMapper;
+    private final ReadingHistoryMapper readingHistoryMapper;
 
     @GetMapping
     public ResponseEntity<PageInfo<Book>> getBooks(
@@ -42,6 +48,55 @@ public class BookController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(book);
+    }
+
+    @GetMapping("/{id}/favorite")
+    public ResponseEntity<?> checkFavorite(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal User user
+    ) {
+        if (user == null) {
+            return ResponseEntity.ok(Map.of("isFavorite", false));
+        }
+        Favorite favorite = favoriteMapper.selectByUserAndBook(user.getId(), id);
+        return ResponseEntity.ok(Map.of("isFavorite", favorite != null));
+    }
+
+    @PostMapping("/{id}/read")
+    public ResponseEntity<?> recordReadingHistory(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal User user
+    ) {
+        if (user == null) {
+            System.out.println("User is null in recordReadingHistory");
+            return ResponseEntity.status(401).build();
+        }
+        
+        System.out.println("Recording history for user: " + user.getId() + ", book: " + id);
+        
+        try {
+            ReadingHistory history = readingHistoryMapper.selectByUserAndBook(user.getId(), id);
+            
+            if (history != null) {
+                System.out.println("Updating existing history: " + history.getId());
+                history.setLastReadAt(LocalDateTime.now());
+                readingHistoryMapper.update(history);
+            } else {
+                System.out.println("Inserting new history");
+                ReadingHistory newHistory = new ReadingHistory();
+                newHistory.setUserId(user.getId());
+                newHistory.setBookId(id);
+                newHistory.setLastReadAt(LocalDateTime.now());
+                // Default progress
+                newHistory.setProgress(BigDecimal.ZERO);
+                int rows = readingHistoryMapper.insert(newHistory);
+                System.out.println("Inserted rows: " + rows + ", new ID: " + newHistory.getId());
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
     @PostMapping("/{id}/favorite")

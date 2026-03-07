@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, nextTick, markRaw } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 import api from '../api';
 import type { Book } from '../types';
 import { ArrowLeft, Moon, Sun, ChevronLeft, ChevronRight } from 'lucide-vue-next';
@@ -14,6 +15,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mj
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const book = ref<Book | null>(null);
 const isLoading = ref(true);
@@ -241,8 +243,18 @@ const decreaseFontSize = () => {
   if (fontSize.value > 14) fontSize.value -= 2;
 };
 
+const recordHistory = async () => {
+  if (!authStore.isAuthenticated) return;
+  try {
+    await api.post(`/books/${route.params.id}/read`);
+  } catch (error) {
+    console.error('Failed to record history', error);
+  }
+};
+
 onMounted(() => {
   fetchBook();
+  recordHistory();
 });
 </script>
 
