@@ -68,7 +68,7 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-bold text-gray-800">图书列表</h2>
         <button 
-          @click="showUploadForm = true" 
+          @click="openUploadModal" 
           class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,11 +78,11 @@
         </button>
       </div>
 
-      <!-- Upload Modal -->
+      <!-- Upload/Edit Modal -->
       <div v-if="showUploadForm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
           <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-            <h2 class="text-xl font-bold text-gray-800">上传新书</h2>
+            <h2 class="text-xl font-bold text-gray-800">{{ isEditing ? '编辑图书' : '上传新书' }}</h2>
             <button @click="showUploadForm = false" class="text-gray-400 hover:text-gray-600 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -91,7 +91,7 @@
           </div>
           
           <div class="p-6">
-            <form @submit.prevent="uploadBook" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form @submit.prevent="handleSaveBook" class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">标题</label>
                 <input v-model="newBook.title" type="text" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none" />
@@ -117,12 +117,13 @@
                 <input type="file" @change="handleCoverUpload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
               </div>
               <div class="col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">图书文件 (PDF/EPUB/TXT)</label>
-                <input type="file" @change="handleFileUpload" accept=".pdf,.epub,.txt" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" required />
+                <label class="block text-sm font-medium text-gray-700 mb-1">图书文件 (PDF/EPUB/TXT) <span v-if="!isEditing" class="text-red-500">*</span></label>
+                <input type="file" @change="handleFileUpload" accept=".pdf,.epub,.txt" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" :required="!isEditing" />
+                <p v-if="isEditing" class="text-xs text-gray-500 mt-1">留空则保持原文件不变</p>
               </div>
               <div class="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4">
                  <button type="button" @click="showUploadForm = false" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">取消</button>
-                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md">上传图书</button>
+                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md">{{ isEditing ? '保存修改' : '上传图书' }}</button>
               </div>
             </form>
           </div>
@@ -153,6 +154,11 @@
               <td class="py-3 px-4 text-gray-600">{{ book.author }}</td>
               <td class="py-3 px-4 text-gray-500">{{ book.isbn }}</td>
               <td class="py-3 px-4 text-center">
+                <button @click="openEditModal(book)" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-1.5 rounded-lg transition-colors mr-2" title="编辑">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
                 <button @click="deleteBook(book.id)" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg transition-colors" title="删除">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -234,6 +240,8 @@ const users = ref([]);
 // Selection
 const selectedBooks = ref([]);
 const selectedUsers = ref([]);
+const isEditing = ref(false);
+const currentBookId = ref(null);
 
 const newBook = ref({
   title: '',
@@ -323,8 +331,32 @@ const fetchUsers = async () => {
   }
 };
 
-const uploadBook = async () => {
-  if (!bookFile.value) {
+const openUploadModal = () => {
+  isEditing.value = false;
+  currentBookId.value = null;
+  newBook.value = { title: '', author: '', isbn: '', categoryId: 1, description: '' };
+  coverFile.value = null;
+  bookFile.value = null;
+  showUploadForm.value = true;
+};
+
+const openEditModal = (book) => {
+  isEditing.value = true;
+  currentBookId.value = book.id;
+  newBook.value = {
+    title: book.title,
+    author: book.author,
+    isbn: book.isbn,
+    categoryId: book.categoryId,
+    description: book.description
+  };
+  coverFile.value = null;
+  bookFile.value = null;
+  showUploadForm.value = true;
+};
+
+const handleSaveBook = async () => {
+  if (!isEditing.value && !bookFile.value) {
     alert('请上传图书文件');
     return;
   }
@@ -338,34 +370,45 @@ const uploadBook = async () => {
   if (coverFile.value) {
     formData.append('cover', coverFile.value);
   }
-  formData.append('file', bookFile.value);
+  if (bookFile.value) {
+    formData.append('file', bookFile.value);
+  }
 
   try {
-    await api.post('/admin/books', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    alert('图书上传成功');
+    if (isEditing.value) {
+      await api.put(`/admin/books/${currentBookId.value}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert('图书更新成功');
+    } else {
+      await api.post('/admin/books', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert('图书上传成功');
+    }
+    
     // Reset form
     newBook.value = { title: '', author: '', isbn: '', categoryId: 1, description: '' };
     coverFile.value = null;
     bookFile.value = null;
+    isEditing.value = false;
+    currentBookId.value = null;
+    
     // Refresh list
     fetchBooks();
     showUploadForm.value = false;
   } catch (error) {
-    console.error('Failed to upload book', error);
+    console.error('Failed to save book', error);
     if (error.response && error.response.data) {
       const data = error.response.data;
       if (typeof data === 'object') {
         const msg = data.error || data.message || JSON.stringify(data);
-        alert(`上传失败: ${msg}`);
+        alert(`${isEditing.value ? '更新' : '上传'}失败: ${msg}`);
       } else {
-        alert(`上传失败: ${data}`);
+        alert(`${isEditing.value ? '更新' : '上传'}失败: ${data}`);
       }
     } else {
-      alert('上传失败');
+      alert(`${isEditing.value ? '更新' : '上传'}失败`);
     }
   }
 };

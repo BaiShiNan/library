@@ -98,6 +98,51 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/books/{id}")
+    public ResponseEntity<?> updateBook(
+            @PathVariable Integer id,
+            @RequestParam("title") String title,
+            @RequestParam("author") String author,
+            @RequestParam("description") String description,
+            @RequestParam("isbn") String isbn,
+            @RequestParam("categoryId") Integer categoryId,
+            @RequestParam(value = "cover", required = false) MultipartFile cover,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        
+        Book book = bookMapper.selectById(id);
+        if (book == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            if (file != null && file.getSize() > 500 * 1024 * 1024) {
+                 return ResponseEntity.badRequest().body("文件大小超过限制 (500MB)");
+            }
+
+            book.setTitle(title);
+            book.setAuthor(author);
+            book.setDescription(description);
+            book.setIsbn(isbn);
+            book.setCategoryId(categoryId);
+
+            if (cover != null && !cover.isEmpty()) {
+                String fileName = saveFile(cover, "covers");
+                book.setCoverUrl("/document/" + fileName);
+            }
+
+            if (file != null && !file.isEmpty()) {
+                 String fileName = saveFile(file, "books");
+                 book.setFileUrl("/document/" + fileName);
+            }
+
+            bookMapper.update(book);
+            return ResponseEntity.ok(book);
+        } catch (Exception e) {
+             e.printStackTrace();
+             return ResponseEntity.internalServerError().body("更新失败: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/books/{id}")
     @CacheEvict(value = "book", key = "#id")
     public ResponseEntity<?> deleteBook(@PathVariable Integer id) {
