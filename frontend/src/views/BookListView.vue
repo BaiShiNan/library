@@ -46,10 +46,10 @@ const fetchBooks = async () => {
     if (searchQuery.value) params.search = searchQuery.value;
 
     const res = await api.get<PaginatedResponse<Book>>('/books', { params });
-    books.value = res.data.records;
+    books.value = res.data.list;
     total.value = res.data.total;
     totalPages.value = res.data.pages;
-    currentPage.value = res.data.current;
+    currentPage.value = res.data.pageNum;
   } catch (error) {
     console.error('Failed to fetch books', error);
   } finally {

@@ -49,9 +49,23 @@ export interface AuthResponse {
 }
 
 export interface PaginatedResponse<T> {
-  records: T[];
+  list: T[];
   total: number;
-  size: number;
-  current: number;
+  pageSize: number;
+  pageNum: number;
   pages: number;
+  // PageHelper extra fields
+  size: number;
+  startRow: number;
+  endRow: number;
+  prePage: number;
+  nextPage: number;
+  isFirstPage: boolean;
+  isLastPage: boolean;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  navigatePages: number;
+  navigatepageNums: number[];
+  navigateFirstPage: number;
+  navigateLastPage: number;
 }

@@ -1,6 +1,5 @@
 package com.library.backend.config;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.library.backend.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +16,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            LambdaQueryWrapper<com.library.backend.entity.User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(com.library.backend.entity.User::getEmail, username);
-            com.library.backend.entity.User user = userMapper.selectOne(queryWrapper);
+            com.library.backend.entity.User user = userMapper.selectByEmail(username);
             if (user == null) {
                 throw new UsernameNotFoundException("用户不存在");
             }

@@ -1,9 +1,16 @@
 package com.library.backend.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.library.backend.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper {
+    User selectById(Integer id);
+    User selectByEmail(String email);
+    java.util.List<User> selectList();
+    int insert(User user);
+    int update(User user);
+    int deleteById(Integer id);
+    int countByEmail(String email);
 }

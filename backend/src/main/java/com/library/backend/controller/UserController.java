@@ -1,7 +1,5 @@
 package com.library.backend.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.library.backend.entity.Book;
 import com.library.backend.entity.Favorite;
 import com.library.backend.entity.ReadingHistory;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,10 +33,7 @@ public class UserController {
 
     @GetMapping("/history")
     public ResponseEntity<List<Book>> getReadingHistory(@AuthenticationPrincipal User user) {
-        LambdaQueryWrapper<ReadingHistory> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ReadingHistory::getUserId, user.getId())
-                    .orderByDesc(ReadingHistory::getLastReadAt);
-        List<ReadingHistory> history = readingHistoryMapper.selectList(queryWrapper);
+        List<ReadingHistory> history = readingHistoryMapper.selectByUserId(user.getId());
         
         List<Integer> bookIds = history.stream()
                                        .map(ReadingHistory::getBookId)
@@ -55,10 +49,7 @@ public class UserController {
 
     @GetMapping("/favorites")
     public ResponseEntity<List<Book>> getFavorites(@AuthenticationPrincipal User user) {
-        LambdaQueryWrapper<Favorite> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Favorite::getUserId, user.getId())
-                    .orderByDesc(Favorite::getCreatedAt);
-        List<Favorite> favorites = favoriteMapper.selectList(queryWrapper);
+        List<Favorite> favorites = favoriteMapper.selectByUserId(user.getId());
         
         List<Integer> bookIds = favorites.stream()
                                          .map(Favorite::getBookId)

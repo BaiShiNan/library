@@ -1,9 +1,15 @@
 package com.library.backend.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.library.backend.entity.Category;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
-public interface CategoryMapper extends BaseMapper<Category> {
+public interface CategoryMapper {
+    Category selectById(Integer id);
+    List<Category> selectAll();
+    int insert(Category category);
+    int update(Category category);
+    int deleteById(Integer id);
 }

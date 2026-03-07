@@ -1,8 +1,7 @@
 package com.library.backend.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.library.backend.entity.Book;
 import com.library.backend.entity.User;
 import com.library.backend.mapper.BookMapper;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -104,9 +103,9 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "1") int page,
                                          @RequestParam(defaultValue = "10") int size) {
-        Page<User> userPage = new Page<>(page, size);
-        IPage<User> result = userMapper.selectPage(userPage, new QueryWrapper<>());
-        return ResponseEntity.ok(result);
+        PageHelper.startPage(page, size);
+        List<User> users = userMapper.selectList();
+        return ResponseEntity.ok(new PageInfo<>(users));
     }
 
     @DeleteMapping("/users/{id}")

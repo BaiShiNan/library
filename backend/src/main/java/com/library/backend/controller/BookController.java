@@ -1,7 +1,7 @@
 package com.library.backend.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.library.backend.entity.Book;
 import com.library.backend.mapper.BookMapper;
 import com.library.backend.mapper.FavoriteMapper;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
-
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -26,26 +24,15 @@ public class BookController {
     private final FavoriteMapper favoriteMapper;
 
     @GetMapping
-    public ResponseEntity<Page<Book>> getBooks(
+    public ResponseEntity<PageInfo<Book>> getBooks(
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "20") Integer limit
     ) {
-        Page<Book> bookPage = new Page<>(page, limit);
-        LambdaQueryWrapper<Book> queryWrapper = new LambdaQueryWrapper<>();
-        
-        if (categoryId != null) {
-            queryWrapper.eq(Book::getCategoryId, categoryId);
-        }
-        
-        if (search != null && !search.isEmpty()) {
-            queryWrapper.like(Book::getTitle, search).or().like(Book::getAuthor, search);
-        }
-        
-        queryWrapper.orderByDesc(Book::getCreatedAt);
-        
-        return ResponseEntity.ok(bookMapper.selectPage(bookPage, queryWrapper));
+        PageHelper.startPage(page, limit);
+        List<Book> books = bookMapper.selectList(categoryId, search);
+        return ResponseEntity.ok(new PageInfo<>(books));
     }
 
     @GetMapping("/{id}")
@@ -62,9 +49,7 @@ public class BookController {
             @PathVariable Integer id,
             @AuthenticationPrincipal User user
     ) {
-        LambdaQueryWrapper<Favorite> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Favorite::getUserId, user.getId()).eq(Favorite::getBookId, id);
-        Favorite favorite = favoriteMapper.selectOne(queryWrapper);
+        Favorite favorite = favoriteMapper.selectByUserAndBook(user.getId(), id);
         
         if (favorite != null) {
             favoriteMapper.deleteById(favorite.getId());

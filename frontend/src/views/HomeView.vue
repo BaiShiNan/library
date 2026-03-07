@@ -25,8 +25,8 @@ onMounted(async () => {
     categories.value = categoriesRes.data;
 
     // Fetch recommended books
-    const booksRes = await api.get<{ records: Book[] }>('/books?limit=4');
-    recommendedBooks.value = booksRes.data.records;
+    const booksRes = await api.get<{ list: Book[] }>('/books?limit=4');
+    recommendedBooks.value = booksRes.data.list;
   } catch (error) {
     console.error('Failed to fetch data', error);
   } finally {

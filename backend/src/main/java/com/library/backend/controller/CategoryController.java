@@ -19,6 +19,6 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<List<Category>> getCategories() {
-        return ResponseEntity.ok(categoryMapper.selectList(null));
+        return ResponseEntity.ok(categoryMapper.selectAll());
     }
 }

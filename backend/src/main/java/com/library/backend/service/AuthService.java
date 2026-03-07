@@ -1,6 +1,5 @@
 package com.library.backend.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.library.backend.dto.AuthResponse;
 import com.library.backend.dto.LoginRequest;
 import com.library.backend.dto.RegisterRequest;
@@ -25,9 +24,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         // Check if user exists
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getEmail, request.getEmail());
-        if (userMapper.selectCount(queryWrapper) > 0) {
+        if (userMapper.countByEmail(request.getEmail()) > 0) {
             throw new RuntimeException("邮箱已被注册");
         }
 
@@ -61,9 +58,8 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getEmail, request.getEmail());
-        var user = userMapper.selectOne(queryWrapper);
+        
+        var user = userMapper.selectByEmail(request.getEmail());
         if (user == null) {
              throw new RuntimeException("用户不存在");
         }

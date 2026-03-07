@@ -1,9 +1,5 @@
 package com.library.backend.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +11,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
-@TableName("users")
 public class User implements UserDetails {
-    @TableId(type = IdType.AUTO)
     private Integer id;
     private String email;
-    @JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String passwordHash;
     private String name;
     private String role;

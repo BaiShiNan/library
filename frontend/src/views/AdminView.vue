@@ -152,7 +152,7 @@ const handleFileUpload = (event: Event) => {
 const fetchBooks = async () => {
   try {
     const response = await api.get('/books', { params: { limit: 100 } });
-    books.value = response.data.records;
+    books.value = response.data.list;
   } catch (error) {
     console.error('Failed to fetch books', error);
   }
@@ -161,7 +161,7 @@ const fetchBooks = async () => {
 const fetchUsers = async () => {
   try {
     const response = await api.get('/admin/users', { params: { size: 100 } });
-    users.value = response.data.records;
+    users.value = response.data.list;
   } catch (error) {
     console.error('Failed to fetch users', error);
   }
