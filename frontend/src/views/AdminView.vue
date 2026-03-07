@@ -197,9 +197,21 @@ const uploadBook = async () => {
     bookFile.value = null;
     // Refresh list
     fetchBooks();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to upload book', error);
-    alert('上传失败');
+    // Display specific error message from backend if available
+    if (error.response && error.response.data) {
+      const data = error.response.data;
+      if (typeof data === 'object') {
+        // Try to find common error fields
+        const msg = data.error || data.message || JSON.stringify(data);
+        alert(`上传失败: ${msg}`);
+      } else {
+        alert(`上传失败: ${data}`);
+      }
+    } else {
+      alert('上传失败');
+    }
   }
 };
 

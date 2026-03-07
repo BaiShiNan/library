@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import type { Book } from '../types';
 import { Star, Book as BookIcon } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';

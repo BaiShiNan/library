@@ -56,32 +56,22 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from) => {
   const authStore = useAuthStore();
+  
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/login');
-  } else if (to.meta.requiresAdmin) {
-    // Check if user is admin. Note: user might be null if not fetched yet,
-    // but if isAuthenticated is true, we should try to fetch or check token.
-    // For simplicity, we assume if authenticated, we check user role.
-    // Ideally we wait for fetchProfile, but let's do a simple check.
+    return '/login';
+  } 
+  
+  if (to.meta.requiresAdmin) {
+    // If not authenticated, already handled above
     if (authStore.user?.role !== 'ADMIN') {
-       // If user is not loaded but token exists, we might need to fetch profile first.
-       // But to keep it simple, we redirect to home if not admin.
-       // A better way is to let the view handle the redirect or show "Access Denied".
-       // Let's rely on the view or a simple check if user is loaded.
        if (authStore.user) {
-         next('/');
-       } else {
-         // User not loaded, maybe let them pass and let the component handle it or fetch?
-         // Let's just let them pass and the component can redirect if not admin after loading.
-         next();
+         return '/';
        }
-    } else {
-      next();
+       // If user info not loaded but has token, component might fetch it.
+       // We allow navigation, but risk access denied view.
     }
-  } else {
-    next();
   }
 });
 

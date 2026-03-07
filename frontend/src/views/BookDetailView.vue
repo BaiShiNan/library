@@ -18,23 +18,17 @@ const fetchBook = async () => {
   try {
     const res = await api.get<Book>(`/books/${route.params.id}`);
     book.value = res.data;
-  } catch (error) {
-    console.error('Failed to fetch book', error);
-    // Mock data
-    book.value = {
-        id: Number(route.params.id),
-        title: '了不起的盖茨比',
-        author: 'F. Scott Fitzgerald',
-        categoryId: 1, // 文学分类对应ID
-        coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=The+Great+Gatsby+book+cover+vintage+classic&image_size=portrait_4_3',
-        fileUrl: '',
-        rating: 4.5,
-        pageCount: 180,
-        description: '《了不起的盖茨比》是美国作家F·斯科特·菲茨杰拉德于1925年出版的小说。故事背景设定在纽约长岛和爵士时代的纽约市，讲述了叙述者尼克·卡拉威与神秘百万富翁杰伊·盖茨比的交往，以及盖茨比对自己旧爱黛西·布卡南的痴迷追求。这部小说被广泛认为是美国文学的经典之作。',
-        publishDate: '1925-04-10',
-        createdAt: new Date().toISOString(),
-        isbn: '978-7-5442-7086-6'
-    };
+  } catch (err: any) {
+    console.error('Failed to fetch book', err);
+    if (err.response) {
+        if (err.response.status === 404) {
+            error.value = '未找到该图书';
+        } else {
+            error.value = `加载失败: ${err.response.status} ${err.response.statusText}`;
+        }
+    } else {
+        error.value = '无法连接到服务器';
+    }
   } finally {
     isLoading.value = false;
   }
@@ -191,7 +185,7 @@ onMounted(() => {
     <div class="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
       <BookOpen class="h-10 w-10 text-gray-400" />
     </div>
-    <h2 class="text-2xl font-bold text-gray-800 mb-2">未找到该图书</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ error || '未找到该图书' }}</h2>
     <p class="text-gray-500 mb-8">抱歉，您访问的图书不存在或已被移除。</p>
     <button 
       @click="router.push('/books')"

@@ -8,9 +8,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.io.Serializable;
+
 @Data
 @TableName("books")
-public class Book {
+public class Book implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String title;

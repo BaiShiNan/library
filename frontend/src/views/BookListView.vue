@@ -52,67 +52,6 @@ const fetchBooks = async () => {
     currentPage.value = res.data.current;
   } catch (error) {
     console.error('Failed to fetch books', error);
-    // Mock data
-    books.value = [
-      {
-        id: 1,
-        title: '了不起的盖茨比',
-        author: 'F. Scott Fitzgerald',
-        categoryId: 1,
-        coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=The+Great+Gatsby+book+cover+vintage+classic&image_size=portrait_4_3',
-        fileUrl: '',
-        rating: 4.5,
-        pageCount: 180,
-        createdAt: new Date().toISOString(),
-        isbn: '123456',
-        description: '',
-        publishDate: new Date().toISOString()
-      },
-      {
-        id: 2,
-        title: '代码整洁之道',
-        author: 'Robert C. Martin',
-        categoryId: 2,
-        coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Clean+Code+book+cover+programming+technology&image_size=portrait_4_3',
-        fileUrl: '',
-        rating: 4.8,
-        pageCount: 464,
-        createdAt: new Date().toISOString(),
-        isbn: '123457',
-        description: '',
-        publishDate: new Date().toISOString()
-      },
-      {
-        id: 3,
-        title: '人类简史',
-        author: 'Yuval Noah Harari',
-        categoryId: 3,
-        coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Sapiens+book+cover+history+anthropology&image_size=portrait_4_3',
-        fileUrl: '',
-        rating: 4.7,
-        pageCount: 443,
-        createdAt: new Date().toISOString(),
-        isbn: '123458',
-        description: '',
-        publishDate: new Date().toISOString()
-      },
-      {
-        id: 4,
-        title: '思考，快与慢',
-        author: 'Daniel Kahneman',
-        categoryId: 4,
-        coverUrl: 'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Thinking+Fast+and+Slow+book+cover+psychology+economy&image_size=portrait_4_3',
-        fileUrl: '',
-        rating: 4.6,
-        pageCount: 499,
-        createdAt: new Date().toISOString(),
-        isbn: '123459',
-        description: '',
-        publishDate: new Date().toISOString()
-      }
-    ];
-    total.value = 4;
-    totalPages.value = 1;
   } finally {
     isLoading.value = false;
   }

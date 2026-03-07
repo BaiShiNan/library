@@ -24,6 +24,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -47,6 +49,11 @@ public class AdminController {
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         try {
+            // Check file size manually if needed, though Spring handles it
+            if (file != null && file.getSize() > 500 * 1024 * 1024) {
+                 return ResponseEntity.badRequest().body("文件大小超过限制 (500MB)");
+            }
+
             Book book = new Book();
             book.setTitle(title);
             book.setAuthor(author);
@@ -55,6 +62,12 @@ public class AdminController {
             book.setCategoryId(categoryId);
             book.setCreatedAt(LocalDateTime.now());
             book.setRating(BigDecimal.valueOf(0)); // Default rating
+            book.setPageCount(0); // Default page count
+            book.setPublishDate(java.time.LocalDate.now()); // Default publish date
+            
+            // Set default fileUrl to avoid NOT NULL constraint if file is missing (though front-end checks it)
+            // But we will set it below.
+            book.setFileUrl("");
 
             if (cover != null && !cover.isEmpty()) {
                 String fileName = saveFile(cover);
@@ -64,16 +77,25 @@ public class AdminController {
             if (file != null && !file.isEmpty()) {
                 String fileName = saveFile(file);
                 book.setFileUrl("/document/" + fileName);
+            } else {
+                return ResponseEntity.badRequest().body("图书文件不能为空");
             }
 
             bookMapper.insert(book);
             return ResponseEntity.ok(book);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+             return ResponseEntity.badRequest().body("上传失败：ISBN 已存在");
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Failed to upload file: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("文件上传失败: " + e.getMessage());
+        } catch (Exception e) {
+             e.printStackTrace();
+             return ResponseEntity.internalServerError().body("系统错误 (" + e.getClass().getSimpleName() + "): " + e.getMessage());
         }
     }
 
     @DeleteMapping("/books/{id}")
+    @CacheEvict(value = "book", key = "#id")
     public ResponseEntity<?> deleteBook(@PathVariable Integer id) {
         bookMapper.deleteById(id);
         return ResponseEntity.ok().build();
