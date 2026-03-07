@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.backend.mapper.ReadingHistoryMapper">
+    <resultMap id="BaseResultMap" type="com.library.backend.entity.ReadingHistory">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="book_id" property="bookId" />
+        <result column="progress" property="progress" />
+        <result column="last_read_at" property="lastReadAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, book_id, progress, last_read_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM reading_history
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserAndBook" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM reading_history
+        WHERE user_id = #{userId} AND book_id = #{bookId}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM reading_history
+        WHERE user_id = #{userId}
+        ORDER BY last_read_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO reading_history (user_id, book_id, progress, last_read_at)
+        VALUES (#{userId}, #{bookId}, #{progress}, #{lastReadAt})
+    </insert>
+
+    <update id="update">
+        UPDATE reading_history
+        SET progress = #{progress},
+            last_read_at = #{lastReadAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM reading_history WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByBookId">
+        DELETE FROM reading_history WHERE book_id = #{bookId}
+    </delete>
+
+    <delete id="deleteByUserId">
+        DELETE FROM reading_history WHERE user_id = #{userId}
+    </delete>
+</mapper>

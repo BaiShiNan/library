@@ -1,4 +1,5 @@
 com\library\backend\BackendApplication.class
+com\library\backend\exception\GlobalExceptionHandler.class
 com\library\backend\security\JwtAuthenticationFilter.class
 com\library\backend\service\AuthService.class
 com\library\backend\mapper\UserMapper.class
@@ -11,10 +12,12 @@ com\library\backend\entity\User.class
 com\library\backend\controller\AuthController.class
 com\library\backend\entity\Category.class
 com\library\backend\config\MybatisPlusConfig.class
+com\library\backend\config\WebMvcConfig.class
 com\library\backend\mapper\CategoryMapper.class
 com\library\backend\security\SecurityConfig.class
 com\library\backend\config\ApplicationConfig.class
 com\library\backend\mapper\FavoriteMapper.class
+com\library\backend\controller\AdminController.class
 com\library\backend\dto\RegisterRequest.class
 com\library\backend\entity\Book.class
 com\library\backend\dto\LoginRequest.class

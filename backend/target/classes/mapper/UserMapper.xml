@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.backend.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.library.backend.entity.User">
+        <id column="id" property="id" />
+        <result column="email" property="email" />
+        <result column="password_hash" property="passwordHash" />
+        <result column="name" property="name" />
+        <result column="role" property="role" />
+        <result column="avatar_url" property="avatarUrl" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, email, password_hash, name, role, avatar_url, created_at, updated_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        <where>
+            <if test="search != null and search != ''">
+                AND (email LIKE CONCAT('%', #{search}, '%') OR name LIKE CONCAT('%', #{search}, '%'))
+            </if>
+        </where>
+        ORDER BY id ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (email, password_hash, name, role, avatar_url, created_at, updated_at)
+        VALUES (#{email}, #{passwordHash}, #{name}, #{role}, #{avatarUrl}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update">
+        UPDATE users
+        <set>
+            <if test="email != null">email = #{email},</if>
+            <if test="passwordHash != null">password_hash = #{passwordHash},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+    <select id="countByEmail" resultType="int">
+        SELECT COUNT(*) FROM users WHERE email = #{email}
+    </select>
+</mapper>
