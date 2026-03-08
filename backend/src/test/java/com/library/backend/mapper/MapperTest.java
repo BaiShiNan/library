@@ -45,7 +45,7 @@ public class MapperTest {
         assertNotNull(foundByEmail);
         assertEquals(user.getId(), foundByEmail.getId());
 
-        List<User> list = userMapper.selectList();
+        List<User> list = userMapper.selectList(null);
         assertFalse(list.isEmpty());
     }
 
