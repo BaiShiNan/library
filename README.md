@@ -22,6 +22,7 @@
    ![登录](images/登录.png)<br>
    首页<br>
    ![首页](images/首页.png)<br>
+   ![首页2](images/首页2.png)<br>
   收藏<br>
    ![收藏](images/收藏.png)<br>
   图书库<br>
