@@ -19,6 +19,17 @@ const handleRegister = async () => {
     return;
   }
 
+  const identifier = email.value.trim();
+  if (!identifier) {
+    error.value = '请输入邮箱或手机号';
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^1[0-9]{10}$/;
+  if (!emailRegex.test(identifier) && !phoneRegex.test(identifier)) {
+    error.value = '请输入有效的邮箱或手机号';
+    return;
+  }
   isLoading.value = true;
   error.value = '';
 
@@ -70,15 +81,15 @@ const handleRegister = async () => {
         </div>
 
         <div class="space-y-1">
-          <label class="block text-sm font-semibold text-gray-700 ml-1">电子邮箱</label>
+          <label class="block text-sm font-semibold text-gray-700 ml-1">邮箱或手机号</label>
           <div class="relative group">
             <Mail class="absolute left-4 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
             <input 
               v-model="email"
-              type="email" 
+              type="text" 
               required
               class="w-full pl-12 pr-4 py-3 border border-gray-200 bg-gray-50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all duration-200 outline-none"
-              placeholder="您的邮箱地址"
+              placeholder="邮箱或手机号"
             />
           </div>
         </div>

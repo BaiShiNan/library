@@ -27,7 +27,7 @@ const toggleMenu = () => {
           <div class="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors duration-300">
             <BookOpen class="h-6 w-6 text-primary" />
           </div>
-          <span class="font-bold text-xl tracking-tight text-gray-800 group-hover:text-primary transition-colors duration-300">数字图书馆</span>
+          <span class="font-bold text-xl tracking-tight text-gray-800 group-hover:text-primary transition-colors duration-300">清远市数字图书馆</span>
         </RouterLink>
 
         <!-- Desktop Navigation -->
