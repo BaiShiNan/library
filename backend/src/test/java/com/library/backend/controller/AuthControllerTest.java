@@ -35,7 +35,7 @@ public class AuthControllerTest {
     @Test
     public void shouldRegisterUser() throws Exception {
         RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
+        request.setAccount("test@example.com");
         request.setPassword("password");
         request.setName("Test User");
 
@@ -52,7 +52,7 @@ public class AuthControllerTest {
     @Test
     public void shouldAuthenticateUser() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setAccount("test@example.com");
         request.setPassword("password");
 
         AuthResponse response = new AuthResponse("token", new User());

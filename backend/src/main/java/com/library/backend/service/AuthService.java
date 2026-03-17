@@ -24,16 +24,16 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         // Check if user exists
-        if (userMapper.countByEmail(request.getEmail()) > 0) {
+        if (userMapper.countByAccount(request.getAccount()) > 0) {
             throw new RuntimeException("邮箱已被注册");
         }
 
         var user = new User();
         user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setAccount(request.getAccount());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         
-        if ("admin@example.com".equalsIgnoreCase(request.getEmail())) {
+        if ("admin@example.com".equalsIgnoreCase(request.getAccount())) {
             user.setRole("ADMIN");
         } else {
             user.setRole("USER");
@@ -54,12 +54,12 @@ public class AuthService {
     public AuthResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getAccount(),
                         request.getPassword()
                 )
         );
         
-        var user = userMapper.selectByEmail(request.getEmail());
+        var user = userMapper.selectByAccount(request.getAccount());
         if (user == null) {
              throw new RuntimeException("用户不存在");
         }

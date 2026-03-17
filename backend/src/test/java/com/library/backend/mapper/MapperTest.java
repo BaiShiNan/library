@@ -27,7 +27,7 @@ public class MapperTest {
     @Test
     public void testUserMapper() {
         User user = new User();
-        user.setEmail("test@example.com");
+        user.setAccount("test@example.com");
         user.setName("Test User");
         user.setPasswordHash("hash");
         user.setRole("USER");
@@ -39,9 +39,9 @@ public class MapperTest {
 
         User found = userMapper.selectById(user.getId());
         assertNotNull(found);
-        assertEquals("test@example.com", found.getEmail());
+        assertEquals("test@example.com", found.getAccount());
 
-        User foundByEmail = userMapper.selectByEmail("test@example.com");
+        User foundByEmail = userMapper.selectByAccount("test@example.com");
         assertNotNull(foundByEmail);
         assertEquals(user.getId(), foundByEmail.getId());
 
@@ -77,7 +77,7 @@ public class MapperTest {
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
             User user = new User();
-            user.setEmail("user" + i + "@example.com");
+            user.setAccount("user" + i + "@example.com");
             user.setName("User " + i);
             user.setPasswordHash("hash");
             userMapper.insert(user);

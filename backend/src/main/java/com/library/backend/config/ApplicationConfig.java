@@ -16,7 +16,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            com.library.backend.entity.User user = userMapper.selectByEmail(username);
+            com.library.backend.entity.User user = userMapper.selectByAccount(username);
             if (user == null) {
                 throw new UsernameNotFoundException("用户不存在");
             }

@@ -13,7 +13,7 @@ import java.util.Collections;
 @Data
 public class User implements UserDetails {
     private Integer id;
-    private String email;
+    private String account;
     @com.fasterxml.jackson.annotation.JsonIgnore
     private String passwordHash;
     private String name;
@@ -21,6 +21,7 @@ public class User implements UserDetails {
     private String avatarUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -37,7 +38,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return account;
     }
 
     @Override
