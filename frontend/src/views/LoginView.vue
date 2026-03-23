@@ -35,7 +35,7 @@ const handleLogin = async () => {
 
   try {
     const res = await api.post('/auth/login', {
-      email: email.value,
+      account: email.value,
       password: password.value,
     });
     authStore.setAuth(res.data);

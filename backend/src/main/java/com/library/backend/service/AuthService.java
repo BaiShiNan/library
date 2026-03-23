@@ -23,7 +23,16 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
-        // Check if user exists
+        if (request.getAccount() == null || request.getAccount().trim().isEmpty()) {
+            throw new RuntimeException("账号不能为空");
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("密码不能为空");
+        }
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new RuntimeException("用户名不能为空");
+        }
+        
         if (userMapper.countByAccount(request.getAccount()) > 0) {
             throw new RuntimeException("邮箱已被注册");
         }

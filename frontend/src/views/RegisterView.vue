@@ -36,7 +36,7 @@ const handleRegister = async () => {
   try {
     await api.post('/auth/register', {
       name: name.value,
-      email: email.value,
+      account: email.value,
       password: password.value,
     });
     router.push('/login');
